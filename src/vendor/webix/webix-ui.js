@@ -45,9 +45,19 @@ Vue.component('webix-ui', {
 
     this.webixId = webix.ui(config, this.$el);
     if (this.value) dataHandler.call(this, this.value);
+
+    window.addEventListener('resize', this.resizeHandler);
   },
   destroyed() {
+    window.removeEventListener('resize', this.resizeHandler);
+
     webix.$$(this.webixId)
       .destructor();
+  },
+
+  methods: {
+    resizeHandler() {
+      this.webixId.adjust();
+    },
   },
 });
