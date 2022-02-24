@@ -3,6 +3,7 @@ module.exports = {
   env: {
     node: true,
   },
+  // ignorePatterns: ['src/vendor/webix/*'], // <<< ignore all files in test folder
   extends: [
     'plugin:vue/essential',
     '@vue/airbnb',
