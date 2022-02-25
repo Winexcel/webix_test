@@ -1,14 +1,27 @@
 <template>
-  <div>
+  <div ref="body">
+    <div ref="tooltip" class="webix-tooltip" role="tooltip">
+      <img class="webix-tooltip__image" style="width: 200px; height: 200px" :src="userAvatar">
+      <div class="webix-tooltip__arrow" data-popper-arrow></div>
+    </div>
+
     <div>Webix Content:</div>
-    {{ config1Data }}
-    <webix-ui :config='config1' :value="config1Data"/>
-    <button @click="changeData">Change</button>
-    <div id="testA" style="height:600px;"></div>
+    <webix-datatable :config='config1' :value="config1Data">
+      <template #percent="row">
+        Percent: {{ row.percent }}
+      </template>
+
+      <template #product>
+        Product
+        <button @click="testHandler">Click</button>
+      </template>
+    </webix-datatable>
   </div>
 </template>
 
 <script>
+import { createPopper } from '@popperjs/core';
+
 function adjustHeaderHeight() {
   const { columns } = this.config;
 
@@ -37,11 +50,11 @@ export default {
   name: 'App',
   data() {
     return {
+      userAvatar: '',
       config1: {
-        container: 'testA',
         view: 'datatable',
         css: 'webix-table',
-        scroll: false,
+        height: 500,
         // autoheight: true,
         // autowidth: true,
         fixedRowHeight: false,
@@ -57,6 +70,7 @@ export default {
             },
             css: 'text-center',
             width: 100,
+            sort: 'int',
           },
           {
             id: 'position',
@@ -64,9 +78,7 @@ export default {
               text: 'Позиция',
               css: 'multiline',
             },
-            template(obj) {
-              return `<span>${obj.position.num}</span><span class="plus-position">+${obj.position.add}</span>`;
-            },
+            template: (obj) => `<span>${obj.position.num}</span><span class="plus-position">+${obj.position.add}</span>`,
             css: 'text-center',
             width: 100,
             sort: 'int',
@@ -77,111 +89,119 @@ export default {
               text: 'Фото',
               css: 'multiline',
             },
-            template: '<img style="width: 50px; height: 50px" src="#photo#" alt="avatar"/>',
+            template: '<img class="enlarge-image" src="#photo#" alt="avatar"/>',
             css: 'text-center',
             width: 100,
             sort: 'int',
           },
-          /*          {
-                      id: 'vendorCode',
-                      header: {
-                        text: 'Артикул',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'salesChart',
-                      header: {
-                        text: 'График продаж',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'product',
-                      header: {
-                        text: 'Товар',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'brand',
-                      header: {
-                        text: 'Брэнд',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'seller',
-                      header: {
-                        text: 'Продавец',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'group',
-                      header: {
-                        text: 'Группа',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'remainder',
-                      header: {
-                        text: 'Остаток',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'reviews',
-                      header: {
-                        text: 'Отзывы',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'rating',
-                      header: {
-                        text: 'Рейтинг',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    },
-                    {
-                      id: 'price',
-                      header: {
-                        text: 'Цена',
-                        css: 'multiline',
-                      },
-                      css: 'text-center',
-                      width: 100,
-                      sort: 'int',
-                    }, */
+          {
+            id: 'vendor',
+            header: {
+              text: 'Артикул',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            template: (row) => `${row.vendor ? `<a href="${row.vendor?.url}">${row.vendor?.code}</a>` : ''}`,
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'salesChart',
+            header: {
+              text: 'График продаж',
+              css: 'multiline',
+            },
+            template: this.$webix.Sparklines.getTemplate({
+              type: 'bar',
+              paddingY: 5,
+              paddingX: 5,
+              minHeight: 10,
+            }),
+            height: 200,
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'product',
+            header: {
+              text: 'Товар',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'brand',
+            header: {
+              text: 'Брэнд',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'seller',
+            header: {
+              text: 'Продавец',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'group',
+            header: {
+              text: 'Группа',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'remainder',
+            header: {
+              text: 'Остаток',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'reviews',
+            header: {
+              text: 'Отзывы',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'rating',
+            header: {
+              text: 'Рейтинг',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
+          {
+            id: 'price',
+            header: {
+              text: 'Цена',
+              css: 'multiline',
+            },
+            css: 'text-center',
+            width: 100,
+            sort: 'int',
+          },
         ],
         on: {
           onResize: window.webix.once(adjustHeaderHeight, this),
@@ -197,28 +217,187 @@ export default {
           },
         },
       },
-      config1Data: [{
-        id: '1',
-        percent: 20,
-        position: {
-          num: 1,
-          add: 2,
+      config1Data: [
+        {
+          id: '1',
+          percent: 1,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+          vendor: {
+            code: '3452454243',
+            url: 'https://ya.ru',
+          },
+          salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500],
         },
-        photo: 'https://html5css.ru/howto/img_avatar.png',
-      },
+        {
+          id: '2',
+          percent: 2,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar2.png',
+        },
+        {
+          id: '3',
+          percent: 3,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '4',
+          percent: 4,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '5',
+          percent: 5,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '6',
+          percent: 6,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '7',
+          percent: 7,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '8',
+          percent: 8,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '9',
+          percent: 9,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '10',
+          percent: 10,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '11',
+          percent: 20,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '12',
+          percent: 20,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '13',
+          percent: 20,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '14',
+          percent: 20,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+        {
+          id: '15',
+          percent: 20,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+        },
+
       ],
     };
   },
   mounted() {
-    // this.$webix.ready(() => {
-    //   this.$webix.ui(this.config1);
-    // });
+    const { tooltip } = this.$refs;
+
+    this.popperInstance = createPopper(tooltip, tooltip, {
+      placement: 'right',
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 12],
+          },
+        },
+      ],
+    });
+    tooltip.removeAttribute('data-show');
+
+    this.$refs.body.addEventListener('mouseover', (event) => {
+      const el = event.target;
+      if (el.tagName === 'IMG' && el.classList.contains('enlarge-image')) {
+        this.userAvatar = el.getAttribute('src');
+        this.popperInstance.state.elements.reference = event.target;
+        tooltip.setAttribute('data-show', '');
+
+        // We need to tell Popper to update the tooltip position
+        // after we show the tooltip, otherwise it will be incorrect
+        this.popperInstance.update();
+      }
+    });
+
+    this.$refs.body.addEventListener('mouseout', () => {
+      tooltip.removeAttribute('data-show');
+    });
   },
   methods: {
-    changeData() {
-      const newArr = [...this.config1Data];
-      newArr[0].title = 'abcd';
-      this.config1Data = newArr;
+    testHandler() {
+      console.log('testHandler');
     },
   },
 };
@@ -227,6 +406,25 @@ export default {
 <style lang="scss">
 .webix-table {
   border: none;
+
+  .webix_ss_vscroll_header {
+    border: none;
+  }
+
+  .enlarge-image {
+    border-radius: 10px;
+    transition: all 0.5s;
+    width: 50px;
+    height: 50px;
+
+    :hover {
+      animation: image-zoom ease-in 2s forwards;
+    }
+  }
+
+  .webix_ss_center_scroll {
+    overflow: unset;
+  }
 
   .plus-position {
     display: inline-flex;
@@ -262,5 +460,58 @@ export default {
 
 .multiline {
   line-height: 30px !important;
+}
+</style>
+
+<style lang="scss" scoped>
+.webix-tooltip {
+  display: block;
+  z-index: 1;
+  opacity: 0;
+  background: #f1f1f1;
+  font-weight: bold;
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+
+.webix-tooltip[data-show] {
+  opacity: 1;
+}
+
+.webix-tooltip__arrow,
+.webix-tooltip__arrow::before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #f1f1f1;
+}
+
+.webix-tooltip__arrow {
+  visibility: hidden;
+}
+
+.webix-tooltip__arrow::before {
+  visibility: visible;
+  content: '';
+  transform: rotate(45deg);
+}
+
+.webix-tooltip[data-popper-placement^='top'] > .webix-tooltip__arrow {
+  bottom: -4px;
+}
+
+.webix-tooltip[data-popper-placement^='bottom'] > .webix-tooltip__arrow {
+  top: -4px;
+}
+
+.webix-tooltip[data-popper-placement^='left'] > .webix-tooltip__arrow {
+  right: -4px;
+}
+
+.webix-tooltip[data-popper-placement^='right'] > .webix-tooltip__arrow {
+  left: -4px;
 }
 </style>

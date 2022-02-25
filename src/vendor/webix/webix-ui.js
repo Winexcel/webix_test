@@ -4,12 +4,10 @@ import * as webix from 'webix';
 const { $$ } = webix;
 
 function dataHandler(value) {
-  let newValue = value;
+  const newValue = value;
   const view = $$(this.webixId);
 
   if (typeof value === 'object') {
-    if (this.copyData) newValue = webix.copy(newValue);
-
     if (view.setValues) {
       view.setValues(newValue);
     } else if (view.parse) {
@@ -27,26 +25,67 @@ function dataHandler(value) {
   }
 }
 
-Vue.component('webix-ui', {
-  props: ['config', 'value', 'copyData'],
+// const Profile = Vue.extend({
+//   render() {
+//     return this.$slots.default;
+//   },
+//   data() {
+//     return {
+//       firstName: 'Уолтер',
+//       lastName: 'Уайт',
+//       alias: 'Гейзенберг',
+//     };
+//   },
+// });
+// // создаёт экземпляр Profile и монтирует его к элементу DOM
+// const instance = new Profile({});
+// const node = instance.$createElement('div', ['Hello']);
+// instance.$slots.default = [node];
+// instance.$mount(document.body);
+
+Vue.component('webix-datatable', {
+  props: ['config', 'value', 'webix'],
   watch: {
     value: {
       handler: dataHandler,
     },
   },
-
   render(h) {
+    // renderer.$mount(document.body);
+
+    const slotColumns = Object.keys(this.$scopedSlots);
+
+    this.config.columns.forEach((column) => {
+      const columnName = column.id;
+      if (slotColumns.includes(columnName)) {
+        // let comp = h(this.$scopedSlots[columnName]()[0]);
+        // console.log(comp);
+        // comp = new Vue(comp);
+        // comp.$mount(document.body);
+
+        // eslint-disable-next-line no-param-reassign
+        column.template = (row) => this.$scopedSlots[columnName](row)[0].text;
+      }
+    });
+
     return h('div');
   },
-
   mounted() {
-    const config = webix.copy(this.config);
-    config.$scope = this;
+    webix.ready(() => {
+      const config = webix.copy(this.config);
+      config.$scope = this;
 
-    this.webixId = webix.ui(config, this.$el);
-    if (this.value) dataHandler.call(this, this.value);
+      this.webixId = webix.ui(config, this.$el);
+      if (this.value) dataHandler.call(this, this.value);
+      this.webixId.adjust();
 
-    window.addEventListener('resize', this.resizeHandler);
+      window.addEventListener('resize', this.resizeHandler);
+
+      this.$emit('update:webix', this.webixId);
+    });
+  },
+  beforeDestroy() {
+    this.$emit('update:webix', null);
   },
   destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
@@ -54,8 +93,10 @@ Vue.component('webix-ui', {
     webix.$$(this.webixId)
       .destructor();
   },
-
   methods: {
+    getTemplates() {
+
+    },
     resizeHandler() {
       this.webixId.adjust();
     },
