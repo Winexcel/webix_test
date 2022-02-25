@@ -8,12 +8,12 @@
     <div>Webix Content:</div>
     <webix-datatable :config='config1' :value="config1Data">
       <template #percent="row">
-        Percent: {{ row.percent }}
+        Percent:&nbsp;<span style="color: red">{{ row.percent }}</span>
       </template>
 
       <template #product>
         Product
-        <button @click="testHandler">Click</button>
+        <button class="delbtn" style="padding: 20px">Click</button>
       </template>
     </webix-datatable>
   </div>
@@ -216,6 +216,11 @@ export default {
             this.render();
           },
         },
+        onClick: {
+          delbtn: () => {
+            console.log('delbtn');
+          },
+        },
       },
       config1Data: [
         {
@@ -396,6 +401,25 @@ export default {
     });
   },
   methods: {
+    generateData() {
+      this.config1Data = [];
+      for (let i = 0; i < 10000; i++) {
+        this.config1Data.push({
+          id: i,
+          percent: 1,
+          position: {
+            num: 1,
+            add: 2,
+          },
+          photo: 'https://html5css.ru/howto/img_avatar.png',
+          vendor: {
+            code: '3452454243',
+            url: 'https://ya.ru',
+          },
+          salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500],
+        });
+      }
+    },
     testHandler() {
       console.log('testHandler');
     },

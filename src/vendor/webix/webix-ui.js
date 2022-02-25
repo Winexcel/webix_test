@@ -25,23 +25,13 @@ function dataHandler(value) {
   }
 }
 
-// const Profile = Vue.extend({
-//   render() {
-//     return this.$slots.default;
-//   },
-//   data() {
-//     return {
-//       firstName: 'Уолтер',
-//       lastName: 'Уайт',
-//       alias: 'Гейзенберг',
-//     };
-//   },
-// });
-// // создаёт экземпляр Profile и монтирует его к элементу DOM
-// const instance = new Profile({});
-// const node = instance.$createElement('div', ['Hello']);
-// instance.$slots.default = [node];
-// instance.$mount(document.body);
+const VNoneToHtml = Vue.extend({
+  props: ['vnode'],
+  render(h) {
+    console.log('VNoneToHtml');
+    return h('div', [this.vnode]);
+  },
+});
 
 Vue.component('webix-datatable', {
   props: ['config', 'value', 'webix'],
@@ -50,21 +40,28 @@ Vue.component('webix-datatable', {
       handler: dataHandler,
     },
   },
+  data() {
+    return {
+      templates: {},
+    };
+  },
   render(h) {
-    // renderer.$mount(document.body);
-
     const slotColumns = Object.keys(this.$scopedSlots);
+    // const noda = new VNoneToHtml({ propsData: { vnode: this.$scopedSlots.percent({ percent: 54 }) } });
+    // noda.$mount('#app2');
 
     this.config.columns.forEach((column) => {
       const columnName = column.id;
       if (slotColumns.includes(columnName)) {
-        // let comp = h(this.$scopedSlots[columnName]()[0]);
-        // console.log(comp);
-        // comp = new Vue(comp);
-        // comp.$mount(document.body);
-
         // eslint-disable-next-line no-param-reassign
-        column.template = (row) => this.$scopedSlots[columnName](row)[0].text;
+        column.template = (row) => {
+          const node = new VNoneToHtml({
+            propsData: { vnode: this.$scopedSlots[columnName](row) },
+          });
+          node.$mount();
+
+          return node.$el.innerHTML;
+        };
       }
     });
 
