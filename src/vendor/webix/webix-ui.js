@@ -4,6 +4,7 @@ import * as webix from 'webix';
 const { $$ } = webix;
 
 function dataHandler(value) {
+  console.log('new values');
   const newValue = value;
   const view = $$(this.webixId);
 
@@ -11,7 +12,7 @@ function dataHandler(value) {
     if (view.setValues) {
       view.setValues(newValue);
     } else if (view.parse) {
-      view.clearAll();
+      // view.clearAll();
       view.parse(newValue);
     }
   } else if (view.setValue) view.setValue(newValue);
@@ -28,7 +29,6 @@ function dataHandler(value) {
 const VNoneToHtml = Vue.extend({
   props: ['vnode'],
   render(h) {
-    console.log('VNoneToHtml');
     return h('div', [this.vnode]);
   },
 });
@@ -37,6 +37,7 @@ Vue.component('webix-datatable', {
   props: ['config', 'value', 'webix'],
   watch: {
     value: {
+      deep: true,
       handler: dataHandler,
     },
   },
@@ -47,16 +48,14 @@ Vue.component('webix-datatable', {
   },
   render(h) {
     const slotColumns = Object.keys(this.$scopedSlots);
-    // const noda = new VNoneToHtml({ propsData: { vnode: this.$scopedSlots.percent({ percent: 54 }) } });
-    // noda.$mount('#app2');
 
     this.config.columns.forEach((column) => {
       const columnName = column.id;
       if (slotColumns.includes(columnName)) {
         // eslint-disable-next-line no-param-reassign
-        column.template = (row) => {
+        column.template = (...params) => {
           const node = new VNoneToHtml({
-            propsData: { vnode: this.$scopedSlots[columnName](row) },
+            propsData: { vnode: this.$scopedSlots[columnName](params[0]) },
           });
           node.$mount();
 

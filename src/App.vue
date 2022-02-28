@@ -6,14 +6,28 @@
     </div>
 
     <div>Webix Content:</div>
-    <webix-datatable :config='config1' :value="config1Data">
-      <template #percent="row">
-        Percent:&nbsp;<span style="color: red">{{ row.percent }}</span>
+    <webix-datatable :config='config1' :value="salesData" :webix.sync="webix">
+      <template #position="row">
+        <span>{{ row.position.num }}</span><span class="plus-position">+{{
+          row.position.add
+        }}</span>
       </template>
 
-      <template #product>
-        Product
-        <button class="delbtn" style="padding: 20px">Click</button>
+      <template #vendor="row">
+        <a v-if="row.vendor" class="link" :href="row.vendor.url">{{ row.vendor.code }}</a>
+        <div>
+          <button class="vendor__add-favorites add-favorites">
+
+            <i v-if="row.$_info && row.$_info.favorite"
+              class="add-favorites__icon fa-solid fa-heart"></i>
+            <i v-else
+               class="add-favorites__icon fa-regular fa-heart"></i>
+          </button>
+        </div>
+      </template>
+
+      <template #product="row">
+        <a class="link" v-if="row.product" :href="row.product.link">{{ row.product.name }}</a>
       </template>
     </webix-datatable>
   </div>
@@ -29,8 +43,8 @@ function adjustHeaderHeight() {
     const header = column.header[0];
 
     // create a temp div
-    const d = window.webix.html.create('DIV', { class: `webix_measure_size ${header.css}` }, '');
-    d.style.cssText = `width:${column.width}px; height:auto; visibility:hidden; position:absolute; top:0px; left:0px; overflow:hidden;`;
+    const d = window.webix.html.create('DIV', { class: `webix_hcell ${header.css}` }, '');
+    d.style.cssText = `width:${column.width}px; padding: 0px 12px 0px 12px;line-height: 30px; height:auto; visibility:hidden; position:absolute; top:0px; left:0px; overflow:hidden;`;
     d.innerHTML = header.text;
     this.$view.appendChild(d);
 
@@ -51,6 +65,7 @@ export default {
   data() {
     return {
       userAvatar: '',
+      webix: null,
       config1: {
         view: 'datatable',
         css: 'webix-table',
@@ -58,7 +73,7 @@ export default {
         // autoheight: true,
         // autowidth: true,
         fixedRowHeight: false,
-        rowLineHeight: 25,
+        rowLineHeight: 30,
         rowHeight: 25,
         resizeColumn: true,
         columns: [
@@ -66,9 +81,9 @@ export default {
             id: 'percent',
             header: {
               text: 'Упущен %',
-              css: 'multiline',
+              css: 'header header_multiline header_h-end header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-end',
             width: 100,
             sort: 'int',
           },
@@ -76,59 +91,57 @@ export default {
             id: 'position',
             header: {
               text: 'Позиция',
-              css: 'multiline',
+              css: 'header header_multiline header_h-end header_v-center',
             },
-            template: (obj) => `<span>${obj.position.num}</span><span class="plus-position">+${obj.position.add}</span>`,
-            css: 'text-center',
+            css: 'col col_v-center col_h-end',
             width: 100,
-            sort: 'int',
+            sort: (a, b) => a.position.num - b.position.num,
           },
           {
             id: 'photo',
             header: {
               text: 'Фото',
-              css: 'multiline',
+              css: 'header header_multiline header_h-end header_v-center',
             },
             template: '<img class="enlarge-image" src="#photo#" alt="avatar"/>',
-            css: 'text-center',
+            css: 'col col_v-center col_h-end',
             width: 100,
-            sort: 'int',
+            sort: 'string',
           },
           {
             id: 'vendor',
             header: {
               text: 'Артикул',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
-            template: (row) => `${row.vendor ? `<a href="${row.vendor?.url}">${row.vendor?.code}</a>` : ''}`,
-            width: 100,
-            sort: 'int',
+            css: 'col col_wrap col_v-center col_h-start',
+            width: 180,
+            sort: 'string',
           },
           {
             id: 'salesChart',
             header: {
               text: 'График продаж',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
             template: this.$webix.Sparklines.getTemplate({
               type: 'bar',
+              color: '#5B98F5',
               paddingY: 5,
               paddingX: 5,
               minHeight: 10,
             }),
-            height: 200,
-            css: 'text-center',
-            width: 100,
+            css: 'col col_v-center col_h-center',
+            width: 300,
             sort: 'int',
           },
           {
             id: 'product',
             header: {
               text: 'Товар',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-start',
             width: 100,
             sort: 'int',
           },
@@ -136,9 +149,9 @@ export default {
             id: 'brand',
             header: {
               text: 'Брэнд',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -146,9 +159,9 @@ export default {
             id: 'seller',
             header: {
               text: 'Продавец',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -156,9 +169,9 @@ export default {
             id: 'group',
             header: {
               text: 'Группа',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -166,9 +179,9 @@ export default {
             id: 'remainder',
             header: {
               text: 'Остаток',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -176,9 +189,9 @@ export default {
             id: 'reviews',
             header: {
               text: 'Отзывы',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -186,9 +199,9 @@ export default {
             id: 'rating',
             header: {
               text: 'Рейтинг',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -196,9 +209,9 @@ export default {
             id: 'price',
             header: {
               text: 'Цена',
-              css: 'multiline',
+              css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'text-center',
+            css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
           },
@@ -212,159 +225,21 @@ export default {
             }, this);
           },
           onColumnResize() {
+            adjustHeaderHeight.call(this);
             this.adjustRowHeight(null, true);
             this.render();
           },
         },
         onClick: {
+          'add-favorites': (event, column) => {
+            const rowId = column.row;
+            this.$store.commit('sales/toggleFavorite', rowId);
+          },
           delbtn: () => {
             console.log('delbtn');
           },
         },
       },
-      config1Data: [
-        {
-          id: '1',
-          percent: 1,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-          vendor: {
-            code: '3452454243',
-            url: 'https://ya.ru',
-          },
-          salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500],
-        },
-        {
-          id: '2',
-          percent: 2,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar2.png',
-        },
-        {
-          id: '3',
-          percent: 3,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '4',
-          percent: 4,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '5',
-          percent: 5,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '6',
-          percent: 6,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '7',
-          percent: 7,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '8',
-          percent: 8,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '9',
-          percent: 9,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '10',
-          percent: 10,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '11',
-          percent: 20,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '12',
-          percent: 20,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '13',
-          percent: 20,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '14',
-          percent: 20,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-        {
-          id: '15',
-          percent: 20,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-        },
-
-      ],
     };
   },
   mounted() {
@@ -400,36 +275,52 @@ export default {
       tooltip.removeAttribute('data-show');
     });
   },
-  methods: {
-    generateData() {
-      this.config1Data = [];
-      for (let i = 0; i < 10000; i++) {
-        this.config1Data.push({
-          id: i,
-          percent: 1,
-          position: {
-            num: 1,
-            add: 2,
-          },
-          photo: 'https://html5css.ru/howto/img_avatar.png',
-          vendor: {
-            code: '3452454243',
-            url: 'https://ya.ru',
-          },
-          salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500],
-        });
-      }
-    },
-    testHandler() {
-      console.log('testHandler');
+  computed: {
+    salesData() {
+      const { data } = this.$store.state.sales;
+      return data;
     },
   },
 };
 </script>
 
 <style lang="scss">
+.add-favorites {
+  margin-left: 20px;
+  height: 50px;
+  outline: none;
+  background: none;
+
+  &__icon {
+    color: #334752;
+    font-size: 18px;
+  }
+}
+
 .webix-table {
+
+  .webix_sparklines_origin {
+    visibility: hidden;
+  }
+
+  .link {
+    color: #5B98F5;
+
+    &:visited {
+      color: #5B98F5;
+    }
+  }
+
   border: none;
+
+  .webix_hcell {
+    .webix_ss_sort_single {
+      position: static;
+      line-height: inherit;
+      height: auto !important;
+      margin-top: 0;
+    }
+  }
 
   .webix_ss_vscroll_header {
     border: none;
@@ -471,14 +362,81 @@ export default {
     border-bottom: none;
   }
 
-  .webix_column.text-center .webix_cell {
+  .webix_column.col .webix_cell {
     display: flex;
+  }
+
+  .webix_column.col_wrap .webix_cell {
+    flex-wrap: wrap;
+  }
+
+  .webix_column.col_v-top .webix_cell {
+    align-items: flex-start;
+  }
+
+  .webix_column.col_v-center .webix_cell {
     align-items: center;
+  }
+
+  .webix_column.col_v-bottom .webix_cell {
+    align-items: flex-end;
+  }
+
+  .webix_column.col_h-start .webix_cell {
+    justify-content: flex-start;
+  }
+
+  .webix_column.col_h-center .webix_cell {
+    justify-content: center;
+  }
+
+  .webix_column.col_h-end .webix_cell {
+    justify-content: flex-end;
   }
 
   .webix_ss_header, .webix_hcolumn, .webix_ss_vscroll_header, .webix_dd_drag_column,
   .webix_hs_left, .webix_hs_center, .webix_hs_right {
     background: transparent;
+  }
+}
+
+.header {
+  display: flex;
+
+  &_multiline {
+    line-height: 30px !important;
+  }
+
+  &_h {
+    &-start {
+      justify-content: flex-start;
+    }
+
+    &-center {
+      justify-content: center;
+    }
+
+    &-end {
+      justify-content: flex-end;
+    }
+  }
+
+  &_v {
+    &-top {
+      align-items: flex-start;
+    }
+
+    &-center {
+      align-items: center;
+    }
+
+    &-bottom {
+      align-items: flex-end;
+    }
+  }
+
+  &_multiline {
+    line-height: 30px !important;
   }
 }
 
