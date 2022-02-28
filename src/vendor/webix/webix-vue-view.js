@@ -1,34 +1,32 @@
 import * as webix from 'webix';
 
 webix.protoUI({
-  name:"vue",
-  $init:function(config){
-    var vtm = config.template;
-    var id = "vue_"+webix.uid();
+  name: 'vue',
+  $init(config) {
+    const vtm = config.template;
+    const id = `vue_${webix.uid()}`;
     this.$vueData = config.data;
 
     delete config.data;
-    config.template = "<div id='"+id+"'></div>";
+    config.template = `<div id='${id}'></div>`;
 
-    this.attachEvent("onAfterRender", function(){
+    this.attachEvent('onAfterRender', function () {
       this.$vue = new Vue({
-        el: "#"+id,
+        el: `#${id}`,
         template: vtm,
         data: this.$vueData,
-        watch: this.config.watch
-      })
+        watch: this.config.watch,
+      });
     });
   },
-  getVue(){
+  getVue() {
     return this.$vue;
   },
-  setValues:function(value){
-    if (this.$vue)
-      for (var key in value){
-        if (typeof this.$vueData[key] !== "undefined")
-          this.$vue.$set(this.$vue.$data, key, value[key]);
+  setValues(value) {
+    if (this.$vue) {
+      for (const key in value) {
+        if (typeof this.$vueData[key] !== 'undefined') this.$vue.$set(this.$vue.$data, key, value[key]);
       }
-    else
-      this.$vueData = value;
-  }
+    } else this.$vueData = value;
+  },
 }, webix.ui.template);

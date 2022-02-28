@@ -3,8 +3,7 @@ import * as webix from 'webix';
 
 const { $$ } = webix;
 
-function dataHandler(value) {
-  console.log('new values');
+function dataHandler(value, oldValue) {
   const newValue = value;
   const view = $$(this.webixId);
 
@@ -12,7 +11,12 @@ function dataHandler(value) {
     if (view.setValues) {
       view.setValues(newValue);
     } else if (view.parse) {
-      // view.clearAll();
+      const parsedValue = JSON.stringify(value);
+      const parsedOldValue = JSON.stringify(oldValue);
+      if (parsedValue !== parsedOldValue) {
+        view.clearAll();
+      }
+
       view.parse(newValue);
     }
   } else if (view.setValue) view.setValue(newValue);
@@ -44,6 +48,7 @@ Vue.component('webix-datatable', {
   data() {
     return {
       templates: {},
+      oldValue: null,
     };
   },
   render(h) {

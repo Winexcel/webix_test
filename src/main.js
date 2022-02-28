@@ -2,6 +2,7 @@ import Vue from 'vue';
 import WebixPlugin from '@/plugins/webix';
 import store from '@/store';
 import App from './App.vue';
+import './quasar';
 
 Vue.config.productionTip = false;
 

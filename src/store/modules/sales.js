@@ -23,6 +23,15 @@ export default {
           name: 'Платье - Marcella',
           link: 'https://ya.ru',
         },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
         $_info: {
           favorite: false,
         },
@@ -206,5 +215,8 @@ export default {
 
       product.$_info.favorite = !product.$_info.favorite;
     },
+  },
+  getters: {
+
   },
 };

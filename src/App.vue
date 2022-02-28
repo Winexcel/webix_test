@@ -1,12 +1,48 @@
 <template>
-  <div ref="body">
+  <div id="app" ref="body">
+    <q-dialog v-model="showDialog">
+      <q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Поля таблицы</div>
+          <q-space/>
+
+          <q-btn flat round dense v-close-popup>
+            <i style="font-size: 15px" class="fa-solid fa-xmark"></i>
+          </q-btn>
+        </q-card-section>
+
+        <q-card-section>
+          Настройка
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <h5 class="app__header">Товары в категории</h5>
+
+    <div class="table-settings">
+      <div class="table-settings__search">
+        <q-input v-model="searchFilter" style="width: 300px" dense outlined label="Поиск">
+          <template v-slot:append>
+            <i style="font-size:15px" class="fa-solid fa-magnifying-glass"></i>
+          </template>
+        </q-input>
+        <q-checkbox style="margin-left: 20px" v-model="onlyFavorites" label="Только избранное" />
+      </div>
+      <div>
+        <q-btn outline color="grey-5" @click="showDialog = !showDialog">
+          <i style="margin-right: 10px" class="fa-solid fa-gear"></i>
+          Настройка таблицы
+        </q-btn>
+      </div>
+    </div>
+
     <div ref="tooltip" class="webix-tooltip" role="tooltip">
       <img class="webix-tooltip__image" style="width: 200px; height: 200px" :src="userAvatar">
       <div class="webix-tooltip__arrow" data-popper-arrow></div>
     </div>
 
-    <div>Webix Content:</div>
-    <webix-datatable :config='config1' :value="salesData" :webix.sync="webix">
+    <webix-datatable
+      style="margin-top: 30px" :config='config1' :value="salesData" :webix.sync="webix">
       <template #position="row">
         <span>{{ row.position.num }}</span><span class="plus-position">+{{
           row.position.add
@@ -18,10 +54,12 @@
         <div>
           <button class="vendor__add-favorites add-favorites">
 
-            <i v-if="row.$_info && row.$_info.favorite"
+            <i
+              v-if="row.$_info && row.$_info.favorite"
               class="add-favorites__icon fa-solid fa-heart"></i>
-            <i v-else
-               class="add-favorites__icon fa-regular fa-heart"></i>
+            <i
+              v-else
+              class="add-favorites__icon fa-regular fa-heart"></i>
           </button>
         </div>
       </template>
@@ -29,6 +67,19 @@
       <template #product="row">
         <a class="link" v-if="row.product" :href="row.product.link">{{ row.product.name }}</a>
       </template>
+
+      <template #brand="row">
+        <a class="link" v-if="row.brand" :href="row.brand.link">{{ row.brand.name }}</a>
+      </template>
+
+      <template #seller="row">
+        <a class="link" v-if="row.seller" :href="row.seller.link">{{ row.seller.name }}</a>
+      </template>
+
+      <template #group="row">
+        {{ row.group }}
+      </template>
+
     </webix-datatable>
   </div>
 </template>
@@ -64,11 +115,14 @@ export default {
   name: 'App',
   data() {
     return {
+      showDialog: false,
+      onlyFavorites: false,
       userAvatar: '',
       webix: null,
       config1: {
         view: 'datatable',
         css: 'webix-table',
+        dragColumn: true,
         height: 500,
         // autoheight: true,
         // autowidth: true,
@@ -142,7 +196,7 @@ export default {
               css: 'header header_multiline header_h-start header_v-center',
             },
             css: 'col col_v-center col_h-start',
-            width: 100,
+            width: 200,
             sort: 'int',
           },
           {
@@ -151,8 +205,8 @@ export default {
               text: 'Брэнд',
               css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'col col_v-center col_h-center',
-            width: 100,
+            css: 'col col_v-center col_h-start',
+            width: 200,
             sort: 'int',
           },
           {
@@ -161,8 +215,8 @@ export default {
               text: 'Продавец',
               css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'col col_v-center col_h-center',
-            width: 100,
+            css: 'col col_v-center col_h-start',
+            width: 200,
             sort: 'int',
           },
           {
@@ -171,8 +225,8 @@ export default {
               text: 'Группа',
               css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'col col_v-center col_h-center',
-            width: 100,
+            css: 'col col_v-center col_h-start',
+            width: 200,
             sort: 'int',
           },
           {
@@ -181,8 +235,8 @@ export default {
               text: 'Остаток',
               css: 'header header_multiline header_h-start header_v-center',
             },
-            css: 'col col_v-center col_h-center',
-            width: 100,
+            css: 'col col_v-center col_h-start',
+            width: 200,
             sort: 'int',
           },
           {
@@ -235,11 +289,9 @@ export default {
             const rowId = column.row;
             this.$store.commit('sales/toggleFavorite', rowId);
           },
-          delbtn: () => {
-            console.log('delbtn');
-          },
         },
       },
+      searchFilter: '',
     };
   },
   mounted() {
@@ -278,13 +330,64 @@ export default {
   computed: {
     salesData() {
       const { data } = this.$store.state.sales;
-      return data;
+
+      let filteredData = data;
+
+      if (this.searchFilter) {
+        filteredData = data.filter((item) => {
+          const keys = Object.keys(item);
+          for (let i = 0; i < keys.length; i += 1) {
+            const prop = item[keys[i]];
+            if (typeof prop === 'object') {
+              const propKeys = Object.keys(prop);
+              for (let j = 0; j < propKeys.length; j += 1) {
+                if (String(prop[propKeys[j]])
+                  .toLowerCase()
+                  .includes(this.searchFilter.toLowerCase())) {
+                  if (this.searchFilter === 'ar') {
+                    debugger;
+                  }
+                  return true;
+                }
+              }
+            }
+            if (String(prop)
+              .toLowerCase()
+              .includes(this.searchFilter.toLowerCase())) {
+              if (this.searchFilter === 'ar') {
+                debugger;
+              }
+              return true;
+            }
+          }
+        });
+      }
+
+      if (this.onlyFavorites) {
+        filteredData = filteredData.filter((item) => item.$_info.favorite);
+      }
+
+      return filteredData;
     },
   },
 };
 </script>
 
 <style lang="scss">
+#app {
+  margin: 0 10px;
+}
+
+.app {
+  &__header {
+    margin: 20px 0;
+  }
+}
+
+.q-btn__content {
+  color: black;
+}
+
 .add-favorites {
   margin-left: 20px;
   height: 50px;
@@ -442,6 +545,20 @@ export default {
 
 .multiline {
   line-height: 30px !important;
+}
+
+.table-settings {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &__search {
+    display: flex;
+  }
+ }
+
+h5 {
+
 }
 </style>
 
