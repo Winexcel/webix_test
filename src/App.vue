@@ -1,5 +1,6 @@
 <template>
   <div id="app" ref="body">
+
     <q-dialog v-model="showDialog">
       <q-card>
         <q-card-section class="row items-center q-pb-none">
@@ -12,7 +13,7 @@
         </q-card-section>
 
         <q-card-section>
-          Настройка
+          <TableColumns :columns="config1.columns" @toggle-column="toggleColumn"/>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -26,7 +27,7 @@
             <i style="font-size:15px" class="fa-solid fa-magnifying-glass"></i>
           </template>
         </q-input>
-        <q-checkbox style="margin-left: 20px" v-model="onlyFavorites" label="Только избранное" />
+        <q-checkbox style="margin-left: 20px" v-model="onlyFavorites" label="Только избранное"/>
       </div>
       <div>
         <q-btn outline color="grey-5" @click="showDialog = !showDialog">
@@ -86,6 +87,7 @@
 
 <script>
 import { createPopper } from '@popperjs/core';
+import TableColumns from '@/components/TableColumns';
 
 function adjustHeaderHeight() {
   const { columns } = this.config;
@@ -113,6 +115,7 @@ function adjustHeaderHeight() {
 
 export default {
   name: 'App',
+  components: { TableColumns },
   data() {
     return {
       showDialog: false,
@@ -140,6 +143,7 @@ export default {
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'position',
@@ -150,6 +154,7 @@ export default {
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: (a, b) => a.position.num - b.position.num,
+            isShowing: true,
           },
           {
             id: 'photo',
@@ -161,6 +166,7 @@ export default {
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: 'string',
+            isShowing: true,
           },
           {
             id: 'vendor',
@@ -171,6 +177,7 @@ export default {
             css: 'col col_wrap col_v-center col_h-start',
             width: 180,
             sort: 'string',
+            isShowing: true,
           },
           {
             id: 'salesChart',
@@ -188,6 +195,7 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 300,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'product',
@@ -198,6 +206,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'brand',
@@ -208,6 +217,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'seller',
@@ -218,6 +228,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'group',
@@ -228,6 +239,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'remainder',
@@ -238,6 +250,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'reviews',
@@ -248,6 +261,7 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'rating',
@@ -258,6 +272,7 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
+            isShowing: true,
           },
           {
             id: 'price',
@@ -268,6 +283,7 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
+            isShowing: true,
           },
         ],
         on: {
@@ -293,6 +309,18 @@ export default {
       },
       searchFilter: '',
     };
+  },
+  methods: {
+    hideColumn() {
+      this.webix.hideColumn('percent');
+    },
+    toggleColumn(column) {
+      if (!column.isShowing) {
+        this.webix.hideColumn(column.id);
+      } else {
+        this.webix.showColumn(column.id);
+      }
+    },
   },
   mounted() {
     const { tooltip } = this.$refs;
@@ -555,7 +583,7 @@ export default {
   &__search {
     display: flex;
   }
- }
+}
 
 h5 {
 
