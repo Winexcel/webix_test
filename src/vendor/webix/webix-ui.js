@@ -83,6 +83,7 @@ Vue.component('webix-datatable', {
       window.addEventListener('resize', this.resizeHandler);
 
       this.$emit('update:webix', this.webixId);
+      this.$emit('init', this.webixId);
     });
   },
   beforeDestroy() {

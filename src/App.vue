@@ -1,18 +1,16 @@
 <template>
   <div id="app" ref="body">
 
+    <button @click="filterTable">Filter</button>
+
     <TableColumns :show.sync="showDialog" :columns="config1.columns" :datatable="datatable"/>
 
     <h5 class="app__header">Товары в категории</h5>
 
     <div class="table-settings">
       <div class="table-settings__search">
-        <q-input v-model="searchFilter" style="width: 300px" dense outlined label="Поиск">
-          <template v-slot:append>
-            <i style="font-size:15px" class="fa-solid fa-magnifying-glass"></i>
-          </template>
-        </q-input>
-        <q-checkbox style="margin-left: 20px" v-model="onlyFavorites" label="Только избранное"/>
+        <TableSearch :search.sync="searchFilter"/>
+        <TableFavorites :only-favorites.sync="onlyFavorites"/>
       </div>
       <div>
         <q-btn outline color="grey-5" @click="showDialog = !showDialog">
@@ -28,6 +26,7 @@
     </div>
 
     <webix-datatable
+      @init="datatableInit"
       style="margin-top: 30px" :config='config1' :value="salesData" :webix.sync="datatable">
       <template #position="row">
         <span>{{ row.position.num }}</span><span class="plus-position">+{{
@@ -72,7 +71,9 @@
 
 <script>
 import { createPopper } from '@popperjs/core';
-import TableColumns from '@/components/TableColumns';
+import TableColumns from '@/components/TableColumns.vue';
+import TableSearch from '@/components/TableSearch.vue';
+import TableFavorites from '@/components/TableFavorites.vue';
 
 function adjustHeaderHeight() {
   const { columns } = this.config;
@@ -100,7 +101,11 @@ function adjustHeaderHeight() {
 
 export default {
   name: 'App',
-  components: { TableColumns },
+  components: {
+    TableFavorites,
+    TableSearch,
+    TableColumns,
+  },
   data() {
     return {
       showDialog: false,
@@ -146,7 +151,24 @@ export default {
               text: 'Фото',
               css: 'header header_multiline header_h-end header_v-center',
             },
-            template: '<img class="enlarge-image" src="#photo#" alt="avatar"/>',
+            template: async (obj) => {
+              const promise = new Promise((resolve) => {
+                console.log(obj.photo);
+                const img = new Image();
+                img.onload = function () {
+                  console.log('image is loaded');
+                };
+                img.src = obj.photo;
+
+                resolve();
+              });
+
+              promise.then((data) => {
+                console.log(data);
+              });
+
+              return Promise.resolve(`<img class="enlarge-image" src="${obj.photo}" alt="avatar"/>`);
+            },
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: 'string',
@@ -353,14 +375,70 @@ export default {
         this.datatable.showColumn(column.id);
       }
     },
-  },
-  watch: {
-    datatable() {
+    filterTable() {
+      this.datatable.filter((obj) => {
+        const keys = Object.keys(obj);
+        for (let i = 0; i < keys.length; i += 1) {
+          const prop = obj[keys[i]];
+
+          if (typeof prop === 'object') {
+            const propKeys = Object.keys(prop);
+
+            for (let j = 0; j < propKeys.length; j += 1) {
+              if (String(prop[propKeys[j]])
+                .toLowerCase()
+                .includes(this.searchFilter.toLowerCase())) {
+                return true;
+              }
+            }
+          }
+          if (String(prop)
+            .toLowerCase()
+            .includes(this.searchFilter.toLowerCase())) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    },
+    datatableInit() {
       if (this.datatable) {
         this.$webix.storage.local.put('originalState', this.datatable.getState());
         const state = this.$webix.storage.local.get('state');
         this.datatable.setState(state);
+
+        console.log(this.$webix.$$);
+
+        this.datatable.attachEvent('onSubViewRender', (item, node) => {
+          console.log('A subview is rendered');
+        });
+
+        this.datatable.attachEvent('onAfterUpdate', (response, id, object) => {
+          // ... some code here ...
+          console.log('onAfterUpdate');
+        });
+
+        this.datatable.attachEvent('onAfterScroll', () => {
+          // your code here
+          console.log('onAfterScroll');
+        });
+
+        this.datatable.attachEvent('onAfterRender', () => {
+          // your code here
+          console.log('onAfterRender');
+        });
+
+        this.datatable.attachEvent('onSubViewCreate', () => {
+          // your code here
+          console.log('onSubViewCreate');
+        });
       }
+    },
+  },
+  watch: {
+    searchFilter() {
+      this.filterTable();
     },
   },
   computed: {
@@ -368,33 +446,6 @@ export default {
       const { data } = this.$store.state.sales;
 
       let filteredData = data;
-
-      // TODO: улучшить читаемость
-      if (this.searchFilter) {
-        filteredData = data.filter((item) => {
-          const keys = Object.keys(item);
-          for (let i = 0; i < keys.length; i += 1) {
-            const prop = item[keys[i]];
-
-            if (typeof prop === 'object') {
-              const propKeys = Object.keys(prop);
-
-              for (let j = 0; j < propKeys.length; j += 1) {
-                if (String(prop[propKeys[j]])
-                  .toLowerCase()
-                  .includes(this.searchFilter.toLowerCase())) {
-                  return true;
-                }
-              }
-            }
-            if (String(prop)
-              .toLowerCase()
-              .includes(this.searchFilter.toLowerCase())) {
-              return true;
-            }
-          }
-        });
-      }
 
       if (this.onlyFavorites) {
         filteredData = filteredData.filter((item) => item.$_info.favorite);
