@@ -1,22 +1,7 @@
 <template>
   <div id="app" ref="body">
 
-    <q-dialog v-model="showDialog">
-      <q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Поля таблицы</div>
-          <q-space/>
-
-          <q-btn flat round dense v-close-popup>
-            <i style="font-size: 15px" class="fa-solid fa-xmark"></i>
-          </q-btn>
-        </q-card-section>
-
-        <q-card-section>
-          <TableColumns :columns="config1.columns" @toggle-column="toggleColumn"/>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <TableColumns :show.sync="showDialog" :columns="config1.columns" :datatable="datatable"/>
 
     <h5 class="app__header">Товары в категории</h5>
 
@@ -43,7 +28,7 @@
     </div>
 
     <webix-datatable
-      style="margin-top: 30px" :config='config1' :value="salesData" :webix.sync="webix">
+      style="margin-top: 30px" :config='config1' :value="salesData" :webix.sync="datatable">
       <template #position="row">
         <span>{{ row.position.num }}</span><span class="plus-position">+{{
           row.position.add
@@ -121,7 +106,7 @@ export default {
       showDialog: false,
       onlyFavorites: false,
       userAvatar: '',
-      webix: null,
+      datatable: null,
       config1: {
         view: 'datatable',
         css: 'webix-table',
@@ -143,7 +128,6 @@ export default {
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: 'int',
-            isShowing: true,
           },
           {
             id: 'position',
@@ -154,7 +138,7 @@ export default {
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: (a, b) => a.position.num - b.position.num,
-            isShowing: true,
+
           },
           {
             id: 'photo',
@@ -166,7 +150,7 @@ export default {
             css: 'col col_v-center col_h-end',
             width: 100,
             sort: 'string',
-            isShowing: true,
+
           },
           {
             id: 'vendor',
@@ -177,7 +161,7 @@ export default {
             css: 'col col_wrap col_v-center col_h-start',
             width: 180,
             sort: 'string',
-            isShowing: true,
+
           },
           {
             id: 'salesChart',
@@ -195,18 +179,25 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 300,
             sort: 'int',
-            isShowing: true,
+
           },
+
           {
             id: 'product',
-            header: {
-              text: 'Товар',
-              css: 'header header_multiline header_h-start header_v-center',
-            },
+            header: [
+              {
+                text: 'Товар',
+                css: 'header header_multiline header_h-start header_v-center',
+              },
+              {
+                content: 'textFilter',
+                compare: this.productFilter,
+              },
+            ],
             css: 'col col_v-center col_h-start',
             width: 200,
-            sort: 'int',
-            isShowing: true,
+            sort: 'string',
+
           },
           {
             id: 'brand',
@@ -217,7 +208,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
-            isShowing: true,
+
           },
           {
             id: 'seller',
@@ -228,18 +219,20 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
-            isShowing: true,
+
           },
           {
             id: 'group',
-            header: {
+            header: [{
               text: 'Группа',
               css: 'header header_multiline header_h-start header_v-center',
-            },
+            }, {
+              content: 'textFilter',
+            }],
             css: 'col col_v-center col_h-start',
             width: 200,
-            sort: 'int',
-            isShowing: true,
+            sort: 'string',
+
           },
           {
             id: 'remainder',
@@ -250,7 +243,7 @@ export default {
             css: 'col col_v-center col_h-start',
             width: 200,
             sort: 'int',
-            isShowing: true,
+
           },
           {
             id: 'reviews',
@@ -261,7 +254,7 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
-            isShowing: true,
+
           },
           {
             id: 'rating',
@@ -272,18 +265,21 @@ export default {
             css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
-            isShowing: true,
+
           },
           {
             id: 'price',
-            header: {
-              text: 'Цена',
-              css: 'header header_multiline header_h-start header_v-center',
-            },
+            header: [
+              {
+                text: 'Цена',
+                css: 'header header_multiline header_h-start header_v-center',
+              },
+              { content: 'numberFilter' },
+            ],
             css: 'col col_v-center col_h-center',
             width: 100,
             sort: 'int',
-            isShowing: true,
+
           },
         ],
         on: {
@@ -309,18 +305,6 @@ export default {
       },
       searchFilter: '',
     };
-  },
-  methods: {
-    hideColumn() {
-      this.webix.hideColumn('percent');
-    },
-    toggleColumn(column) {
-      if (!column.isShowing) {
-        this.webix.hideColumn(column.id);
-      } else {
-        this.webix.showColumn(column.id);
-      }
-    },
   },
   mounted() {
     const { tooltip } = this.$refs;
@@ -355,26 +339,50 @@ export default {
       tooltip.removeAttribute('data-show');
     });
   },
+  methods: {
+    productFilter(value, filter) {
+      return value.name.toLowerCase()
+        .includes(filter.toLowerCase());
+    },
+    toggleColumn(column) {
+      this.$webix.storage.local.put('state', this.datatable.getState());
+
+      if (!column.isShowing) {
+        this.datatable.hideColumn(column.id);
+      } else {
+        this.datatable.showColumn(column.id);
+      }
+    },
+  },
+  watch: {
+    datatable() {
+      if (this.datatable) {
+        this.$webix.storage.local.put('originalState', this.datatable.getState());
+        const state = this.$webix.storage.local.get('state');
+        this.datatable.setState(state);
+      }
+    },
+  },
   computed: {
     salesData() {
       const { data } = this.$store.state.sales;
 
       let filteredData = data;
 
+      // TODO: улучшить читаемость
       if (this.searchFilter) {
         filteredData = data.filter((item) => {
           const keys = Object.keys(item);
           for (let i = 0; i < keys.length; i += 1) {
             const prop = item[keys[i]];
+
             if (typeof prop === 'object') {
               const propKeys = Object.keys(prop);
+
               for (let j = 0; j < propKeys.length; j += 1) {
                 if (String(prop[propKeys[j]])
                   .toLowerCase()
                   .includes(this.searchFilter.toLowerCase())) {
-                  if (this.searchFilter === 'ar') {
-                    debugger;
-                  }
                   return true;
                 }
               }
@@ -382,9 +390,6 @@ export default {
             if (String(prop)
               .toLowerCase()
               .includes(this.searchFilter.toLowerCase())) {
-              if (this.searchFilter === 'ar') {
-                debugger;
-              }
               return true;
             }
           }
@@ -429,6 +434,10 @@ export default {
 }
 
 .webix-table {
+
+  .webix_hcell {
+    border-bottom: none !important;
+  }
 
   .webix_sparklines_origin {
     visibility: hidden;

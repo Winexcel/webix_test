@@ -20,6 +20,42 @@ export default {
           2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
           2500, 2100, 2500],
         product: {
+          name: 'Футболка - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
+        $_info: {
+          favorite: false,
+        },
+      },
+      {
+        id: '2',
+        percent: 1,
+        position: {
+          num: 1,
+          add: 2,
+        },
+        photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
           name: 'Платье - Marcella',
           link: 'https://ya.ru',
         },
@@ -32,178 +68,303 @@ export default {
           link: 'https://ya.ru',
         },
         group: 'Патчи',
-        $_info: {
-          favorite: false,
-        },
-      },
-      {
-        id: '2',
-        percent: 2,
-        position: {
-          num: 23,
-          add: 2,
-        },
-        photo: 'https://html5css.ru/howto/img_avatar2.png',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '3',
-        percent: 3,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Рифмы',
+        remainder: 550,
+        reviews: 1200,
+        rating: 15.3,
+        price: 1000,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '4',
-        percent: 4,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '5',
-        percent: 5,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '6',
-        percent: 6,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '7',
-        percent: 7,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '8',
-        percent: 8,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '9',
-        percent: 5454,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
       {
         id: '10',
-        percent: 12341,
+        percent: 1,
         position: {
           num: 1,
           add: 2,
         },
         photo: 'https://html5css.ru/howto/img_avatar.png',
+        vendor: {
+          code: '3452454243',
+          url: 'https://ya.ru',
+        },
+        salesChart: [2000, 3000, 2100, 2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100,
+          2500, 2000, 3000, 2100, 2500, 2100, 2500, 2000, 3000, 2100, 2500, 2000, 3000, 2100,
+          2500, 2100, 2500],
+        product: {
+          name: 'Платье - Marcella',
+          link: 'https://ya.ru',
+        },
+        brand: {
+          name: 'ArtSkills',
+          link: 'https://ya.ru',
+        },
+        seller: {
+          name: 'ООО Смарттек',
+          link: 'https://ya.ru',
+        },
+        group: 'Патчи',
+        remainder: 550,
+        reviews: 1200,
+        rating: 28.65,
+        price: 1200,
         $_info: {
           favorite: false,
         },
       },
-      {
-        id: '11',
-        percent: 20,
-        position: {
-          num: 1,
-          add: 2,
-        },
-        photo: 'https://html5css.ru/howto/img_avatar.png',
-        $_info: {
-          favorite: false,
-        },
-      },
-      {
-        id: '12',
-        percent: 20,
-        position: {
-          num: 1,
-          add: 2,
-        },
-        photo: 'https://html5css.ru/howto/img_avatar.png',
-        $_info: {
-          favorite: false,
-        },
-      },
-      {
-        id: '13',
-        percent: 20,
-        position: {
-          num: 1,
-          add: 2,
-        },
-        photo: 'https://html5css.ru/howto/img_avatar.png',
-        $_info: {
-          favorite: false,
-        },
-      },
-      {
-        id: '14',
-        percent: 434,
-        position: {
-          num: 1,
-          add: 2,
-        },
-        photo: 'https://html5css.ru/howto/img_avatar.png',
-        $_info: {
-          favorite: false,
-        },
-      },
-      {
-        id: '15',
-        percent: 21,
-        position: {
-          num: 1,
-          add: 2,
-        },
-        photo: 'https://html5css.ru/howto/img_avatar.png',
-        $_info: {
-          favorite: false,
-        },
-      }],
+    ],
   },
   mutations: {
     toggleFavorite(state, id) {
@@ -216,7 +377,5 @@ export default {
       product.$_info.favorite = !product.$_info.favorite;
     },
   },
-  getters: {
-
-  },
+  getters: {},
 };

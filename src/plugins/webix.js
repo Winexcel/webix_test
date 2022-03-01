@@ -1,6 +1,7 @@
 // webix
-import * as webix from 'webix/webix';
-import 'webix/webix.css';
+import * as webix2 from 'webix';
+import * as webix from '@/vendor/webix/webix';
+import '@/vendor/webix/mini.css';
 import '@/vendor/webix/webix-controls';
 import '@/vendor/webix/webix-ui';
 import '@/vendor/webix/webix-vue-view';
